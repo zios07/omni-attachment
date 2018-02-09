@@ -1,0 +1,118 @@
+
+
+.attachment-container {
+    border-radius: 5px;
+    width: 50%;
+    margin: 0px auto;
+    float: none;
+    margin-top:50px;
+    font-size: 0.9em;
+    border-collapse: unset;
+    margin-bottom: 120px
+}
+
+.attachment-container-col {
+    text-align: center;
+    height: 100%
+}
+
+.attachment-container-col, .attachment-container-header{
+    text-align: center
+}
+
+.attachment-container-head {
+    font-size: 1.2em;
+    background-color: #ecf6ff
+}
+/*
+.button {
+    -moz-appearance: button;
+    
+    -webkit-appearance: button;
+    
+    padding: 10px;
+    margin: 10px;
+    width: 70px;
+}
+*/
+.drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 200px;
+    height: 35px;
+    text-align: center;
+    padding-top: 4px;
+    margin: 10px;
+    color: rgb(150, 150, 150);
+    font-weight: bold;
+}
+
+.free-drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding-top: 4px;
+    color: rgb(150, 150, 150);
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+.drop-box:hover {
+    cursor: pointer
+}
+
+.free-drop-box:hover {
+    cursor: pointer
+}
+
+.dragover {
+    border: 5px dashed blue;
+}
+
+.attachment-action-icons {
+    font-size: 1.3em;
+}
+
+.attachment-category {
+    height: 60px;
+}
+
+.attachment-free-upload {
+    height: 2000px
+}
+
+.progress-container {
+    padding-top: 10px;
+    padding-left: 10px;
+    width: 90%
+}
+
+.attachment-delete-modal {
+    padding-top: 0; 
+    padding-bottom: 5px
+}
+
+.attachment-uncategorized-item-glyphicons{
+    display: inline-block;
+    padding-left: 100px;
+}
+.attachment-uncategorized-item {
+    border-bottom: 0.5px solid #DCDCDC;
+}
+
+.attachment-uncategorized-item-description {
+    max-width : 350px; 
+    white-space : nowrap;
+    overflow : hidden;
+}
+
+.attachment-upload-modal {
+    height: 150px;
+}
+
+.attachment-error-message {
+    margin: 90px 50px;
+    margin-left: 100px
+}
