@@ -170,7 +170,6 @@
             // Generate UUID only if it is defined and empty
             function generateUUID() {
                 if(angular.isDefined(uuid) && uuid == ""){
-                    console.log("generating uuid");
                     var d = new Date().getTime();
                     if (window.performance && typeof window.performance.now === "function") {
                         d += performance.now(); //use high-precision timer if available
@@ -204,7 +203,7 @@
                     $http.put(url).then(function(response){
                         resetUUID();
                     }, function(error){
-                        console.log(error);
+                        toastr.error(error);
                     });
                 }
             }

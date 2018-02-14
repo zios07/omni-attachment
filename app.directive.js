@@ -181,7 +181,6 @@
                 init();
 
                 function init(){
-                    console.log(scope.attachableId);
                     scope.uncategorizedAttachments = [];
                     getConfig();
                     mainPromise.then(function(){
