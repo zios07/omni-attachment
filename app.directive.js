@@ -12,10 +12,10 @@
                 <table class="table table-bordered table-hover attachment-container" cell-padding="10">
                     <thead class="attachment-container-head">
                         <tr>
-                            <th class="attachment-container-header" scope="col">Categorie</th>
-                            <th class="attachment-container-header" scope="col">Description</th>
-                            <th class="attachment-container-header" scope="col">Obligatoire</th>
-                            <th class="attachment-container-header" scope="col">Fournie</th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Categorie</th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Description</th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Obligatoire</th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Fournie</th>
                             <th class="attachment-container-header" scope="col">Attachement</th>
                         </tr>
                     </thead>
@@ -42,7 +42,7 @@
                             
                                 <div ng-show="cat.file && !cat.uploading">
                                     {{cat.file.name}}<br>
-                                    <button class="btn btn-default btn-sm attachment-upload-button" type="button" ng-click="uploadAttachment(cat, false, true)">
+                                    <button class="btn btn-default btn-sm attachment-upload-button" type="button" ng-click="uploadAttachment(cat, false, cat.displayPopup)">
                                         <span class="glyphicon glyphicon-cloud-upload"></span>
                                         Upload
                                     </button>
@@ -78,7 +78,7 @@
                             FREE UPLOAD INPUT
 
                         -->
-                        <tr class="attachment-category attachment-free-upload" ng-show="entity.freeUpload.enabled || criteriaObj.freeUpload.enabled">
+                        <tr class="attachment-category attachment-free-upload" ng-show="mode == 'write' && (entity.freeUpload.enabled || criteriaObj.freeUpload.enabled)">
                             <td colspan="5" class="attachment-container-col">
                                 <div ngf-drop ngf-select ng-model="freeUploadCategory.file" class="free-drop-box" 
                                     ngf-drag-over-class="'dragover'" ngf-allow-dir="true"
@@ -147,11 +147,6 @@
                 mode: "="
             },
 
-            // TODO: 
-            // Code refactoring
-            // Internationalization
-            // Erreur messages ...
-
             link: function(scope, element, attrs){
 
                 scope.getConfig = getConfig;
@@ -186,6 +181,7 @@
                 init();
 
                 function init(){
+                    console.log(scope.attachableId);
                     scope.uncategorizedAttachments = [];
                     getConfig();
                     mainPromise.then(function(){
@@ -327,14 +323,17 @@
 
                     // Filling the dto
                     var attachmentDto = {
-                        attachableId : scope.attachableId,
                         className : scope.className,
                         appName : scope.applicationName,
-                        uuid : scope.uuid,
                         criteria: scope.criteria,
                         category: category,
                         delivered: false
                     }
+
+                    if(angular.isDefined(scope.attachableId) && scope.attachableId != null && scope.attachableId > 0)
+                        attachmentDto.attachableId = scope.attachableId;
+                    else
+                        attachmentDto.attachableId = scope.uuid;
                         
                     if(isCategoryDefined){
                         if(isCategoryAttachmentDefined && scope.uploadCategory.attachment.delivered){
@@ -343,10 +342,6 @@
                         }
                         // Abort download if size is too large
                         if(isFileDefined){
-
-                            console.log(scope.uploadCategory.maxSize);
-                            console.log(scope.uploadCategory.file.size * Math.pow(10, -6));
-
                             if(!angular.isDefined(scope.uploadCategory.maxSize) || scope.uploadCategory.maxSize == null){
                                 scope.uploadCategory.maxSize = MAX_SIZE;
                             }
@@ -367,12 +362,12 @@
                     
                     // Build and send the post query
                     if(isCategoryDefined)
-                        scope.file = scope.uploadCategory.file;                        
+                        scope.file = scope.uploadCategory.file;   
 
                     var upload = Upload.upload({
                         url: URL,
                         fields: {attachment: Upload.jsonBlob(attachmentDto)},
-                        file: scope.file
+                        file: scope.file,
                     })
 
                     upload.progress(function (evt) {
@@ -495,14 +490,16 @@
 
                 function displayErrorMessage(error){
                     var msg;
-                    if(angular.isDefined(error.data) && error.data != null){
-                        if(angular.isDefined(error.data.message) && error.data.message != null)
-                            msg = error.data.message;
-                        if(angular.isDefined(error.data.exception) && error.data.exception != null)
-                            msg = error.data.exception;
-                    } else
-                        msg = "Erreur inconnue est survenue";
-
+                    switch(error.status){
+                        case 401:
+                            msg = "Unauthorized"
+                            break;
+                        case 404:
+                            msg = "Not found"
+                            break;
+                        default:
+                            msg = "Unknown error"
+                    }
                     toastr.error(msg);
                 }
             }
@@ -514,7 +511,7 @@
             $scope.attachmentDetails = {};
   
             $scope.ok = function () {
-              if (angular.isDefined($scope.attachmentDetails.description)) {
+              if (angular.isDefined($scope.attachmentDetails.description) && $scope.attachmentDetails.description != null && $scope.attachmentDetails.description != "") {
                   $rootScope.$broadcast('startUpload', $scope.attachmentDetails);
                   $uibModalInstance.close();
               } else {
