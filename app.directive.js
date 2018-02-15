@@ -3,20 +3,20 @@
     angular.module('omniAttachment')
     .directive('omniAttachment', directive);
 
-    directive.$inject = ["OmniAttachmentService","$timeout", "$http", "$uibModal", "$q", "toastr", "Upload"];
+    directive.$inject = ["OmniAttachmentService","$timeout", "$http", "$uibModal", "$q", "toastr", "Upload", "$translate"];
 
-    function directive(OmniAttachmentService,$timeout, $http, $uibModal, $q, toastr, Upload){
+    function directive(OmniAttachmentService,$timeout, $http, $uibModal, $q, toastr, Upload, $translate){
         var provider = {
             restrict: 'E',
             template: `
                 <table class="table table-bordered table-hover attachment-container" cell-padding="10">
                     <thead class="attachment-container-head">
                         <tr>
-                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Categorie</th>
-                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Description</th>
-                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Obligatoire</th>
-                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col">Fournie</th>
-                            <th class="attachment-container-header" scope="col">Attachement</th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col" translate="attachment.column.category"></th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col" translate="attachment.column.description"></th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col" translate="attachment.column.required"></th>
+                            <th ng-show="categories.length != 0" class="attachment-container-header" scope="col" translate="attachment.column.delivered"></th>
+                            <th class="attachment-container-header" scope="col" translate="attachment.column.attachment"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,7 +33,7 @@
                                         ngf-drag-over-class="'dragover'" ngf-allow-dir="true"
                                         accept="*">
                                     
-                                        <span>Glisser & deposer votre fichier </span>
+                                        <span translate="attachment.misc.draganddrop"></span>
                                     
                                     </div>
                                 
@@ -44,11 +44,11 @@
                                     {{cat.file.name}}<br>
                                     <button class="btn btn-default btn-sm attachment-upload-button" type="button" ng-click="uploadAttachment(cat, false, cat.displayPopup)">
                                         <span class="glyphicon glyphicon-cloud-upload"></span>
-                                        Upload
+                                        {{"attachment.button.upload" | translate}}
                                     </button>
                                     <button class="btn btn-default btn-sm" ng-click="cancelUpload(cat)">
                                         <span class="glyphicon glyphicon-remove"></span>    
-                                        Cancel
+                                        {{"attachment.button.cancel" | translate}}
                                     </button>
                                 </div>
 
@@ -68,7 +68,7 @@
                                     <span class="glyphicon glyphicon-download attachment-action-icons"></span>
                                 </a>
                                 <div ng-show="!cat.attachment">
-                                    <span>Aucun attachement</span>
+                                    <span translate="attachment.message.nodata"></span>
                                 </div>
                             </td>
                         </tr>
@@ -84,7 +84,7 @@
                                     ngf-drag-over-class="'dragover'" ngf-allow-dir="true"
                                     accept="*">
                                 
-                                    <span ng-show="!freeUploadCategory.file">Glisser & deposer un autre fichier .. </span>
+                                    <span ng-show="!freeUploadCategory.file" translate="attachment.misc.draganddrop"></span>
                                     <span ng-show="freeUploadCategory.file"> {{freeUploadCategory.file.name}} </span>
 
                                 </div>
@@ -94,11 +94,11 @@
                                     {{cat.file.name}}<br>
                                     <button class="btn btn-default btn-sm attachment-upload-button" type="button" ng-click="uploadAttachment(freeUploadCategory , true, displayPopup)">
                                         <span class="glyphicon glyphicon-cloud-upload"></span>
-                                        Upload
+                                        {{"attachment.button.upload" | translate}}
                                     </button>
                                     <button class="btn btn-default btn-sm" ng-click="cancelUpload(freeUploadCategory)">
                                         <span class="glyphicon glyphicon-remove"></span>    
-                                        Cancel
+                                        {{"attachment.button.cancel" | translate}}
                                     </button>
                                 </div>
 
@@ -194,20 +194,20 @@
                     }, function(error){
                         displayErrorMessage(error);
                     })
-                }
+                };
 
                 function getConfig(){
                     mainPromise = OmniAttachmentService.getConfig().then(function(response){
                         scope.config = response.data;
                     });
-                }
+                };
 
                 function getEntity(){
                     scope.entity = OmniAttachmentService.getEntity(scope.config, scope.className);
                     if (angular.isDefined(scope.entity.freeUpload) && scope.entity.freeUpload != null && scope.entity.freeUpload.enabled){
                         scope.displayPopup = scope.entity.freeUpload.displayPopup;
                     }
-                }
+                };
 
                 function getCriteria(){
                     scope.criteriaObj = OmniAttachmentService.getCriteria(scope.config, scope.className, scope.criteria);
@@ -215,11 +215,11 @@
                         if (!scope.displayPopup)
                             scope.displayPopup = scope.criteriaObj.freeUpload.displayPopup;
                     }
-                }
+                };
 
                 function getCriteriaCategories(){
                     scope.categories = OmniAttachmentService.getCriteriaCategories(scope.config, scope.className, scope.criteria);
-                }
+                };
 
                 function getAttachments(){
                     var promise = OmniAttachmentService.getAttachments(scope.attachableId, scope.className, scope.applicationName)
@@ -230,19 +230,19 @@
                         displayErrorMessage(error);
                     });
                     promises.push(promise);
-                }
+                };
 
                 function downloadAttachment(id){
                     OmniAttachmentService.downloadAttachment(id);
-                }
+                };
 
                 var deleteModalHtml = `
                 <div class="modal-body" style="font-size: large">
-                    <p>Do you want to delete this attachment ? </p>
+                    <p translate>attachment.message.delete</p>
                 </div>
                 <div class="modal-footer attachment-delete-modal">
-                    <button class="btn btn-primary" ng-click="delete()" translate>Delete</button>
-                    <button class="btn btn-defualt" ng-click="cancel()" translate> Annuler </button>
+                    <button class="btn btn-primary" ng-click="delete()" translate>attachment.button.delete</button>
+                    <button class="btn btn-defualt" ng-click="cancel()" translate>attachment.button.cancel</button>
                 </div>
                 `
 
@@ -257,7 +257,7 @@
                                 $scope.delete = function(){
                                     doDeleteAttachment(id);
                                     $uibModalInstance.close();
-                                    toastr.success('Attachment supprimé avec succès !');
+                                    displayTranslatedSuccessMessage("attachment.message.deleted");
                                 }
                                 $scope.cancel = function(){
                                     $uibModalInstance.close();
@@ -266,13 +266,13 @@
                         });
                     else
                         doDeleteAttachment(id);
-                }
+                };
 
                 function doDeleteAttachment(id){
                     OmniAttachmentService.deleteAttachment(id).then(function(response){
                         init();
                     })
-                }
+                };
 
                 function uploadAttachment(category, isFreeUpload, displayPopup){
 
@@ -291,11 +291,11 @@
                     } else {
                         doUploadAttachment();
                     }
-                }
+                };
                 
                 function cancelUpload(cat){
                     cat.file = null;
-                }
+                };
 
                 // Upload attachment (details comming from popup if any)
                 function doUploadAttachment(details){
@@ -320,19 +320,20 @@
                         if(angular.isDefined(scope.uploadCategory.codeCategory) && angular.isDefined(scope.uploadCategory.labelCategory))
                             category = scope.uploadCategory;
 
+
+                    // If no attachableId is set, use uuid
+                    if(!angular.isDefined(scope.attachableId) || scope.attachableId == null || scope.attachableId < 0)
+                        scope.attachableId = scope.uuid;
+
                     // Filling the dto
                     var attachmentDto = {
+                        attachableId: scope.attachableId,
                         className : scope.className,
                         appName : scope.applicationName,
                         criteria: scope.criteria,
                         category: category,
                         delivered: false
                     }
-
-                    if(angular.isDefined(scope.attachableId) && scope.attachableId != null && scope.attachableId > 0)
-                        attachmentDto.attachableId = scope.attachableId;
-                    else
-                        attachmentDto.attachableId = scope.uuid;
                         
                     if(isCategoryDefined){
                         if(isCategoryAttachmentDefined && scope.uploadCategory.attachment.delivered){
@@ -345,7 +346,7 @@
                                 scope.uploadCategory.maxSize = MAX_SIZE;
                             }
                             if (scope.uploadCategory.file.size * Math.pow(10, -6) >= scope.uploadCategory.maxSize) {
-                                toastr.error("La taille du fichier ne doit pas dépasser "+scope.uploadCategory.maxSize+"MB", "Erreur");
+                                displayTranslatedErrorMessage("attachment.error.size", {max_size: scope.uploadCategory.maxSize});
                                 return;
                             } else {
                                 attachmentDto.uploaded = true;
@@ -381,7 +382,7 @@
                     }, function(error){
                         displayErrorMessage(error);
                     })
-                }
+                };
 
                 function onUploadSuccess(isFileDefined){
                     $timeout(function(){
@@ -389,10 +390,11 @@
                         scope.uploadCategory.uploading = false;
                         if(isFileDefined){
                             scope.uploadCategory.file = null;
-                            toastr.success('Attachement enregistré avec succès !');  
+                            // displayTranslatedSuccessMessage("attachment.message.uploaded");
+                            toastr.success('attachment uploaded');
                         }
                     }, 2000)
-                }
+                };
 
                 // Event listener for checking/unchecking delivered checkbox
                 function onDeliveredChange(cat){
@@ -409,7 +411,7 @@
                         else
                             updateDelivered(cat);
                     }
-                }
+                };
 
                 function updateDelivered(cat){
                     OmniAttachmentService.updateDelivered(cat).then(function(response){
@@ -417,7 +419,7 @@
                     }, function(error){
                         displayErrorMessage(error);
                     })
-                }
+                };
 
                 // Adding attachment to category to show in table (using category code !)
                 function assignAttachmentsToCategories(){
@@ -436,7 +438,7 @@
                         if(!angular.isDefined(attachment.category) || attachment.category == null)
                             scope.uncategorizedAttachments.push(attachment);
                     })
-                }
+                };
 
                 // Watchers 
 
@@ -465,7 +467,7 @@
                 // Utils
                 scope.truncate = function (num, places) {
                     return Math.trunc(num * Math.pow(10, places)) / Math.pow(10, places);
-                }
+                };
         
                 scope.formatSize = function (attachments) {
                     attachments.forEach(function (attachment, index) {
@@ -476,7 +478,7 @@
                         else
                         attachment.size = scope.truncate((attachment.size), 2) + " Octets";
                     })
-                }
+                };
 
                 function extractFileName(file){
                     var fileName = file.name;
@@ -485,7 +487,7 @@
                         fileName = fileName.substring(0, n);
                     }
                     return fileName;
-                }
+                };
 
                 function displayErrorMessage(error){
                     var msg;
@@ -500,10 +502,22 @@
                             msg = "Unknown error"
                     }
                     toastr.error(msg);
+                };
+
+                function displayTranslatedSuccessMessage(msg, params){
+                    $translate(msg, params).then(function(translatedMessage){
+                        toastr.success(translatedMessage);
+                    })
+                };
+
+                function displayTranslatedErrorMessage(msg, params){
+                    $translate(msg, params).then(function(translatedMessage){
+                        toastr.error(translatedMessage);
+                    })
                 }
             }
             
-        }
+        };
 
 
         var ModalInstanceCtrl2 = function ($scope, $uibModalInstance, $rootScope, $http) {
@@ -514,30 +528,32 @@
                   $rootScope.$broadcast('startUpload', $scope.attachmentDetails);
                   $uibModalInstance.close();
               } else {
-                $scope.error = "Veuillez saisir une description pour le fichier";
+                $translate('attachment.error.nodescription')
+                    .then(function (translatedMessage) {
+                        toastr.error(translatedMessage);
+                });
               }
             };
   
             $scope.cancel = function () {
-              $uibModalInstance.dismiss('cancel');
+                $uibModalInstance.dismiss('cancel');
             };
-          }
+         };
 
 
         function showUploadDialog() {
-            var message = "attachment.message.details";
+            var message = "attachment.message.upload";
   
             var modalHtml = '<div class="modal-header" style="font-size: large"><h3 translate>' + message + '</h3></div>';
             modalHtml += '<div class="modal-body attachment-upload-modal" style="font-size: large">';
-            modalHtml += '<span>Description</span><span style="color: red" ng-hide="attachmentDetails.description">*</span><br><input type="text" ng-model="attachmentDetails.description" class="form-control" placeholder="{{\'attachment.description.placeholder\' | translate}}" /><br>';
-            modalHtml += '<span ng-if=\'error\' class=\'alert alert-danger attachment-error-message text-center\' translate>{{error}}</span></div></div>';
-            modalHtml += '<div class="modal-footer" style="width=20px; padding-top: 0; padding-bottom: 5px"><button class="btn btn-primary" ng-click="ok()" translate>Upload</button><button class="btn btn-defualt" ng-click="cancel()" translate>Annuler</button></div>';
+            modalHtml += '<span translate="attachment.label.description"></span><span style="color: red" ng-hide="attachmentDetails.description">*</span><br><input type="text" ng-model="attachmentDetails.description" class="form-control" placeholder="{{\'attachment.placeholder.description\' | translate}}" /><br>';
+            modalHtml += '<div class="modal-footer" style="width=20px; padding-top: 0; padding-bottom: 5px"><button class="btn btn-primary" ng-click="ok()" translate>attachment.button.upload</button><button class="btn btn-defualt" ng-click="cancel()" translate>attachment.button.cancel</button></div>';
             var modalInstance = $uibModal.open({
               template: modalHtml,
               controller: ModalInstanceCtrl2
             });
-          }
+        };
         return provider;
-    }
+    };
 
 })()
