@@ -12,8 +12,6 @@
         var provider = {
             setBaseUrl : setBaseUrl,
             getBaseUrl : getBaseUrl,
-            setTypesUrl : setTypesUrl,
-            getTypesUrl : getTypesUrl,
             setCriteriaConfigUrl : setCriteriaConfigUrl,
             getCriteriaConfigUrl : getCriteriaConfigUrl,
             $get: omniAttachmentService
@@ -38,15 +36,7 @@
             return criteriaConfigUrl;
         }
 
-        function setTypesUrl(url){
-            typesUrl = url;
-        }
-        
-        function getTypesUrl(){
-            return typesUrl;
-        }
-
-        function omniAttachmentService($http, $window){
+        function omniAttachmentService($http, $window, toastr){
             
             var uuid = "";
 
@@ -119,10 +109,13 @@
             function getCriteria(config, className, criteria){
                 var currCriteria = {};
                 var currEntity = getEntity(config, className);
-                currEntity.criterias.forEach(function(crit){
-                    if(crit.codeCriteria == criteria)
-                        currCriteria = crit;
-                })
+                if(angular.isDefined(currEntity.criterias))
+                    currEntity.criterias.forEach(function(crit){
+                        if(crit.codeCriteria == criteria)
+                            currCriteria = crit;
+                    })
+                else
+                    toastr.error("No criteria for : "+className);
                 return currCriteria;
             }
 
@@ -177,7 +170,6 @@
             // Generate UUID only if it is defined and empty
             function generateUUID() {
                 if(angular.isDefined(uuid) && uuid == ""){
-                    console.log("generating uuid");
                     var d = new Date().getTime();
                     if (window.performance && typeof window.performance.now === "function") {
                         d += performance.now(); //use high-precision timer if available
@@ -208,12 +200,16 @@
                 // var uuid = AttachmentService.getUUID();
                 if (angular.isDefined(uuid) && uuid != "") {
                     var url = baseUrl + "?id=" + id + "&uuid=" + uuid;
-                    return $http.put(url);
+                    $http.put(url).then(function(response){
+                        resetUUID();
+                    }, function(error){
+                        toastr.error(error);
+                    });
                 }
             }
 
         }
-        omniAttachmentService.$inject = ['$http', '$window'];
+        omniAttachmentService.$inject = ['$http', '$window', 'toastr'];
     }
     
 

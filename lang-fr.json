@@ -1,0 +1,36 @@
+{
+	"attachment" : {
+		"column": {
+			"category": "Categorie",
+			"description": "Description",
+			"required": "Obligatoire",
+			"delivered": "Fournie",
+			"attachment": "Pièce jointe"
+		},
+		"misc": {
+			"draganddrop": "Glisser & déposer un fichier"
+		},
+		"button": {
+			"upload": "Upload",
+			"cancel": "Annuler",
+			"delete": "Supprimer"
+		},
+		"message": {
+			"nodata": "Aucune pièce jointe",
+			"delete": "Voulez-vous supprimer ce fichier ?",
+			"upload": "Enregistrement du fichier",
+			"deleted": "Pièce jointe supprimée avec succès",
+			"uploaded": "Pièce jointe enregistrée avec succès"
+		},
+		"label": {
+			"description": "Description"
+		},
+		"placeholder": {
+			"description": "Description du fichier"
+		},
+		"error": {
+			"nodescription": "Veuillez saisir une description",
+			"size": "La taille du fichier ne doit pas dépasser {{max_size}}MB"
+		}
+	}
+}

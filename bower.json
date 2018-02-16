@@ -8,6 +8,7 @@
   	"style.css",
     "app.env.js",
     "app.module.js",
+    "app.config.js",
     "app.service.js",
     "app.directive.js"
   ],
