@@ -64,10 +64,10 @@
                                 </div>
                             </td>
                             <td class="attachment-container-col" ng-show="mode == 'read'">
-                                <a ng-show="cat.attachment" ng-click="downloadAttachment(cat.attachment.id)">
+                                <a ng-show="cat.attachment && cat.attachment.uploaded" ng-click="downloadAttachment(cat.attachment.id)">
                                     <span class="glyphicon glyphicon-download attachment-action-icons"></span>
                                 </a>
-                                <div ng-show="!cat.attachment">
+                                <div ng-show="!cat.attachment || !cat.attachment.uploaded">
                                     <span translate="attachment.message.nodata"></span>
                                 </div>
                             </td>
