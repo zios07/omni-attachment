@@ -8,6 +8,7 @@
     "style.css",
     "app.env.js",
     "app.module.js",
+    "app.config.js",
     "app.service.js",
     "app.directive.js"
   ],
@@ -35,15 +36,13 @@
     "angular-toastr": "^2.1.1",
     "ng-file-upload": "^12.2.13"
   },
-  "homepage": "https://github.com/zios07/omnu-attachment",
-  "_release": "45e28aa936",
+  "_release": "ec8d07edda",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "45e28aa936f0b59718d8d7d34941966512b38b5e"
+    "commit": "ec8d07eddaa964df8d4df24cbdb53cfbf3fc1e7e"
   },
-  "_source": "https://github.com/zios07/omnu-attachment.git",
+  "_source": "http://10.10.1.170:10080/os-angularjs/omni-attachements-configurable.git",
   "_target": "*",
-  "_originalSource": "omni-attachment",
-  "_direct": true
+  "_originalSource": "http://10.10.1.170:10080/os-angularjs/omni-attachements-configurable.git"
 }
