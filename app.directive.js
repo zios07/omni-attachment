@@ -103,8 +103,6 @@
         '</table>',
         '</td>',
         '</tr>',
-
-
         ' </tbody>',
         '</table>'
       ].join('\n'),
@@ -116,7 +114,7 @@
         mode: "="
       },
 
-      link: function(scope, element, attrs){
+      link: function(scope){
 
         scope.getConfig = getConfig;
         scope.getCriteriaCategories = getCriteriaCategories;
@@ -139,7 +137,7 @@
           attachment : {
             delivered : true
           }
-        }
+        };
 
         var URL = OmniAttachmentService.getURL();
         var MAX_SIZE = 16;
@@ -159,24 +157,24 @@
             getAttachments();
             $q.all(promises).then(function () {
               assignAttachmentsToCategories();
-            })
+            });
           }, function(error){
             displayErrorMessage(error);
-          })
-        };
+          });
+        }
 
         function getConfig(){
           mainPromise = OmniAttachmentService.getConfig().then(function(response){
             scope.config = response.data;
           });
-        };
+        }
 
         function getEntity(){
           scope.entity = OmniAttachmentService.getEntity(scope.config, scope.className);
           if (angular.isDefined(scope.entity.freeUpload) && scope.entity.freeUpload != null && scope.entity.freeUpload.enabled){
             scope.displayPopup = scope.entity.freeUpload.displayPopup;
           }
-        };
+        }
 
         function getCriteria(){
           scope.criteriaObj = OmniAttachmentService.getCriteria(scope.config, scope.className, scope.criteria);
@@ -185,11 +183,11 @@
               scope.displayPopup = scope.criteriaObj.freeUpload.displayPopup;
             }
           }
-        };
+        }
 
         function getCriteriaCategories(){
           scope.categories = OmniAttachmentService.getCriteriaCategories(scope.config, scope.className, scope.criteria);
-        };
+        }
 
         function getAttachments(){
           var promise = OmniAttachmentService.getAttachments(scope.attachableId, scope.className, scope.applicationName)
@@ -200,11 +198,11 @@
               displayErrorMessage(error);
             });
           promises.push(promise);
-        };
+        }
 
         function downloadAttachment(id){
           OmniAttachmentService.downloadAttachment(id);
-        };
+        }
 
         var deleteModalHtml = [
           '<div class="modal-body" style="font-size: large">',
@@ -229,7 +227,7 @@
                   doDeleteAttachment(id);
                   $uibModalInstance.close();
                   displayTranslatedSuccessMessage("attachment.message.deleted");
-                }
+                };
                 $scope.cancel = function(){
                   $uibModalInstance.close();
                 };
@@ -241,10 +239,10 @@
         }
 
         function doDeleteAttachment(id){
-          OmniAttachmentService.deleteAttachment(id).then(function(response){
+          OmniAttachmentService.deleteAttachment(id).then(function(){
             init();
-          })
-        };
+          });
+        }
 
         function uploadAttachment(category, isFreeUpload, displayPopup){
 
@@ -259,15 +257,15 @@
               // remove listener
               scope.$$listeners.startUpload.splice(1);
               doUploadAttachment(details);
-            })
+            });
           } else {
             doUploadAttachment();
           }
-        };
+        }
 
         function cancelUpload(cat){
           cat.file = null;
-        };
+        }
 
         // Upload attachment (details comming from popup if any)
         function doUploadAttachment(details){
@@ -288,14 +286,16 @@
 
           // Setting the attachmentDto category only if it contains code and label
           // Otherwise, it's a freeUpload without category
-          if(isCategoryDefined)
-            if(angular.isDefined(scope.uploadCategory.codeCategory) && angular.isDefined(scope.uploadCategory.labelCategory))
+          if(isCategoryDefined){
+            if(angular.isDefined(scope.uploadCategory.codeCategory) && angular.isDefined(scope.uploadCategory.labelCategory)){
               category = scope.uploadCategory;
-
+            }
+          }
 
           // If no attachableId is set, use uuid
-          if(!angular.isDefined(scope.attachableId) || scope.attachableId == null || scope.attachableId < 0)
+          if(!angular.isDefined(scope.attachableId) || scope.attachableId == null || scope.attachableId < 0){
             scope.attachableId = scope.uuid;
+          }
 
           // Filling the dto
           var attachmentDto = {
@@ -305,7 +305,7 @@
             criteria: scope.criteria,
             category: category,
             delivered: false
-          }
+          };
 
           if(isCategoryDefined){
             if(isCategoryAttachmentDefined && scope.uploadCategory.attachment.delivered){
@@ -324,23 +324,25 @@
                 attachmentDto.uploaded = true;
                 // Setting description from data comming from popup if displaypopup = true
                 // Otherwise the description is the fileName
-                if(angular.isDefined(details))
+                if(angular.isDefined(details)){
                   attachmentDto.description = details.description;
-                else
+                }
+                else {
                   attachmentDto.description = extractFileName(scope.uploadCategory.file);
+                }
               }
             }
           }
 
           // Build and send the post query
-          if(isCategoryDefined)
+          if(isCategoryDefined){
             scope.file = scope.uploadCategory.file;
-
+          }
           var upload = Upload.upload({
             url: URL,
             fields: {attachment: Upload.jsonBlob(attachmentDto)},
             file: scope.file,
-          })
+          });
 
           upload.progress(function (evt) {
             // If uploading a file, show progress bar
@@ -349,12 +351,12 @@
               scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             }
 
-          }).then(function (response) {
+          }).then(function () {
             onUploadSuccess(isFileDefined);
           }, function(error){
             displayErrorMessage(error);
-          })
-        };
+          });
+        }
 
         function onUploadSuccess(isFileDefined){
           $timeout(function(){
@@ -365,8 +367,8 @@
               // displayTranslatedSuccessMessage("attachment.message.uploaded");
               toastr.success('attachment uploaded');
             }
-          }, 2000)
-        };
+          }, 2000);
+        }
 
         // Event listener for checking/unchecking delivered checkbox
         function onDeliveredChange(cat){
@@ -375,23 +377,25 @@
             if(!cat.attachment.uploaded){
               uploadAttachment(cat, false, false);
             }
-            else
+            else{
               updateDelivered(cat);
+            }
           } else {
-            if(!cat.attachment.uploaded)
+            if(!cat.attachment.uploaded){
               deleteAttachment(cat.attachment.id, false);
-            else
+            }else{
               updateDelivered(cat);
+            }
           }
-        };
+        }
 
         function updateDelivered(cat){
-          OmniAttachmentService.updateDelivered(cat).then(function(response){
+          OmniAttachmentService.updateDelivered(cat).then(function(){
 
           }, function(error){
             displayErrorMessage(error);
-          })
-        };
+          });
+        }
 
         // Adding attachment to category to show in table (using category code !)
         function assignAttachmentsToCategories(){
@@ -403,35 +407,39 @@
                   category.attachment = attachment;
                 }
               }
-            })
-          })
+            });
+          });
 
           angular.forEach(scope.attachments, function(attachment){
-            if(!angular.isDefined(attachment.category) || attachment.category == null)
+            if(!angular.isDefined(attachment.category) || attachment.category == null){
               scope.uncategorizedAttachments.push(attachment);
-          })
-        };
+            }
+          });
+        }
 
         // Watchers
 
         scope.$watch('criteria', function(newValue, oldValue) {
           if (newValue){
-            if(oldValue != newValue)
+            if(oldValue != newValue){
               init();
+            }
           }
         }, true);
 
         scope.$watch('className', function(newValue, oldValue) {
           if (newValue){
-            if(oldValue != newValue)
+            if(oldValue != newValue){
               init();
+            }
           }
         }, true);
 
         scope.$watch('attachableId', function(newValue, oldValue) {
           if (newValue){
-            if(oldValue != newValue)
+            if(oldValue != newValue){
               init();
+            }
           }
         }, true);
 
@@ -442,14 +450,17 @@
         };
 
         scope.formatSize = function (attachments) {
-          attachments.forEach(function (attachment, index) {
-            if (attachment.size > 900 && attachment.size < 900000)
+          attachments.forEach(function (attachment) {
+            if (attachment.size > 900 && attachment.size < 900000){
               attachment.size = scope.truncate((attachment.size / 1024), 2) + " Ko";
-            else if (attachment.size > 900000)
+            }
+            else if (attachment.size > 900000) {
               attachment.size = scope.truncate(((attachment.size) / 1000000), 2) + " Mb";
-            else
+            }
+            else {
               attachment.size = scope.truncate((attachment.size), 2) + " Octets";
-          })
+            }
+          });
         };
 
         function extractFileName(file){
@@ -459,40 +470,40 @@
             fileName = fileName.substring(0, n);
           }
           return fileName;
-        };
+        }
 
         function displayErrorMessage(error){
           var msg;
           switch(error.status){
             case 401:
-              msg = "Unauthorized"
+              msg = "Unauthorized";
               break;
             case 404:
-              msg = "Not found"
+              msg = "Not found";
               break;
             default:
-              msg = "Unknown error"
+              msg = "Unknown error";
           }
           toastr.error(msg);
-        };
+        }
 
         function displayTranslatedSuccessMessage(msg, params){
           $translate(msg, params).then(function(translatedMessage){
             toastr.success(translatedMessage);
-          })
-        };
+          });
+        }
 
         function displayTranslatedErrorMessage(msg, params){
           $translate(msg, params).then(function(translatedMessage){
             toastr.error(translatedMessage);
-          })
+          });
         }
       }
 
     };
 
 
-    var ModalInstanceCtrl2 = function ($scope, $uibModalInstance, $rootScope, $http) {
+    var ModalInstanceCtrl2 = function ($scope, $uibModalInstance, $rootScope) {
       $scope.attachmentDetails = {};
 
       $scope.ok = function () {
@@ -520,12 +531,12 @@
       modalHtml += '<div class="modal-body attachment-upload-modal" style="font-size: large">';
       modalHtml += '<span translate="attachment.label.description"></span><span style="color: red" ng-hide="attachmentDetails.description">*</span><br><input type="text" ng-model="attachmentDetails.description" class="form-control" placeholder="{{\'attachment.placeholder.description\' | translate}}" /><br>';
       modalHtml += '<div class="modal-footer" style="width=20px; padding-top: 0; padding-bottom: 5px"><button class="btn btn-primary" ng-click="ok()" translate>attachment.button.upload</button><button class="btn btn-defualt" ng-click="cancel()" translate>attachment.button.cancel</button></div>';
-      var modalInstance = $uibModal.open({
+      $uibModal.open({
         template: modalHtml,
         controller: ModalInstanceCtrl2
       });
-    };
+    }
     return provider;
-  };
+  }
 
-})()
+})();
