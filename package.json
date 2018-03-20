@@ -1,0 +1,15 @@
+{
+  "name": "omni-attachment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "lint": "eslint ./**/*.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^4.19.0",
+    "eslint-plugin-angular": "~0.12.0"
+  }
+}

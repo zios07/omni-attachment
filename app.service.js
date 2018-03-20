@@ -4,10 +4,12 @@
     .provider('OmniAttachmentService', OmniAttachmentServiceProvider);
 
     function OmniAttachmentServiceProvider(){    
-        
-        var baseUrl = env.defaultBaseUrl;
-        var typesUrl = env.defaultTypesUrl;
-        var criteriaConfigUrl = env.defaultCriteriaConfigUrl;
+
+        omniAttachmentService.$inject = ['$http', '$window', 'toastr'];
+
+        var baseUrl = '';
+        var typesUrl = '';
+        var criteriaConfigUrl = '';
 
         var provider = {
             setBaseUrl : setBaseUrl,
@@ -15,7 +17,7 @@
             setCriteriaConfigUrl : setCriteriaConfigUrl,
             getCriteriaConfigUrl : getCriteriaConfigUrl,
             $get: omniAttachmentService
-        }
+        };
         
         return provider;
 
@@ -55,7 +57,7 @@
                 getUUID : getUUID,
                 resetUUID : resetUUID,
                 updateAttachableId : updateAttachableId
-            }
+            };
             return service;
 
             //Get the url for upload method in the directive
@@ -67,7 +69,7 @@
                 return $http.get(typesUrl);
             }
 
-            function getAttachments(attachableId, className, appName, criteria){
+            function getAttachments(attachableId, className, appName){
                 return $http.get(baseUrl+"?attachableId="+attachableId+"&className="
                     +className+"&appName="+appName+"&criteria=");
             }
@@ -101,7 +103,7 @@
                     config.entities.forEach(function(e){
                         if (e.className == className)
                             entity = e;
-                    })
+                    });
                 }
                 return entity;
             }
@@ -113,7 +115,7 @@
                     currEntity.criterias.forEach(function(crit){
                         if(crit.codeCriteria == criteria)
                             currCriteria = crit;
-                    })
+                    });
                 else
                     toastr.error("No criteria for : "+className);
                 return currCriteria;
@@ -135,7 +137,7 @@
                             // Add entity categories (global categories) to categories array
                             addCategories(categories, entity.categories);
                         }
-                    })
+                    });
 
                 // Getting the right criteria from the entity
                 if(angular.isDefined(entity.criterias))
@@ -143,7 +145,7 @@
                         if(crit.codeCriteria == criteria)
                             // Add criteria categories to categories array
                             addCategories(categories, crit.categories);
-                    })
+                    });
 
                 return categories;
 
@@ -154,7 +156,7 @@
                 if(angular.isDefined(src) && src != null && src.length > 0){
                     angular.forEach(src, function(category){
                         dest.push(category);
-                    })
+                    });
                 }
             }
 
@@ -163,7 +165,7 @@
                 if(angular.isDefined(categories) && categories != null && categories.length > 0){
                     angular.forEach(categories, function(category){
                         category.isGlobal = true;
-                    })
+                    });
                 }
             }
 
@@ -178,7 +180,7 @@
                         var r = (d + Math.random() * 16) % 16 | 0;
                         d = Math.floor(d / 16);
                         return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-                    })
+                    });
                 }
               }
 
@@ -190,17 +192,13 @@
             function getUUID(){
                 return uuid;
             }
-
-            function setUUID(id){
-                uuid = id;
-            }
     
             // Takes in the id of the persisted entity and update attachment's attachableId
             function updateAttachableId(id) {
                 // var uuid = AttachmentService.getUUID();
                 if (angular.isDefined(uuid) && uuid != "") {
                     var url = baseUrl + "?id=" + id + "&uuid=" + uuid;
-                    $http.put(url).then(function(response){
+                    $http.put(url).then(function(){
                         resetUUID();
                     }, function(error){
                         toastr.error(error);
@@ -209,8 +207,7 @@
             }
 
         }
-        omniAttachmentService.$inject = ['$http', '$window', 'toastr'];
     }
     
 
-})()
+})();
